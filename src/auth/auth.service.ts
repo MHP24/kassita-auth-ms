@@ -39,6 +39,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
         user: {
           id: user.id,
           username: user.username,
+          apartment: user.apartment,
           email: user.email,
           roles: user.roles,
         },
@@ -64,6 +65,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
       user: {
         id: user.id,
         username: user.username,
+        apartment: user.apartment,
         email: user.email,
         roles: user.roles,
       },
@@ -153,6 +155,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
         user: {
           id: user.id,
           username: user.username,
+          apartment: user.apartment,
           email: user.email,
           roles: user.roles,
         },

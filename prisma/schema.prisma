@@ -66,11 +66,11 @@ enum ValidRoles {
 }
 
 model User {
-  id        String @id @default(uuid()) @map("id")
-  username  String @map("username")
-  email     String @unique @map("email")
-  password  String @map("password")
-  apartment String @map("apartment")
+  id        String  @id @default(uuid()) @map("id")
+  username  String  @map("username")
+  email     String  @unique @map("email")
+  password  String  @map("password")
+  apartment String? @map("apartment")
 
   roles     ValidRoles[] @default([user]) @map("roles")
   isActive  Boolean      @default(true) @map("is_active")

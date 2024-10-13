@@ -1,4 +1,9 @@
-import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 
 export class SignUpUserDto {
   @IsString()
@@ -9,7 +14,8 @@ export class SignUpUserDto {
   username: string;
 
   @IsString()
-  apartment: string;
+  @IsOptional()
+  apartment?: string;
 
   @IsString()
   @IsStrongPassword()
