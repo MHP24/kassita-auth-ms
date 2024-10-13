@@ -11,6 +11,11 @@ export type Session = {
   token: SessionToken;
 };
 
+export type SessionVerify = {
+  user: User;
+  token: string;
+};
+
 export type SessionLogout = {
   message: string;
   userId: string;

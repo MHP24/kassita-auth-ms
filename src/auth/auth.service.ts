@@ -1,12 +1,12 @@
 import { HttpStatus, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RpcException } from '@nestjs/microservices';
 import { PrismaClient } from '@prisma/client';
+import { RpcException } from '@nestjs/microservices';
 import { SignInUserDto, SignUpUserDto } from './dto';
 import { Hasher, IdGenerator } from '../common';
 import { envs } from '../config';
 import { JwtPayload } from './interfaces';
-import { Session, SessionToken, User } from './types';
+import { Session, SessionToken, SessionVerify, User } from './types';
 
 @Injectable()
 export class AuthService extends PrismaClient implements OnModuleInit {
@@ -124,6 +124,72 @@ export class AuthService extends PrismaClient implements OnModuleInit {
     const token = this.signToken(data);
     await this.applySession(data.userId, data.sessionId);
     return token;
+  }
+
+  // * Verify Session on request time
+  async verifySession(token: string): Promise<SessionVerify> {
+    try {
+      // * Validate token
+      const { userId, sessionId } = this.jwtService.verify(token, {
+        secret: envs.jwtSecret,
+      });
+
+      // * Validate as current token available
+      const user = await this.user.findUnique({
+        where: { id: userId, isActive: true },
+      });
+
+      if (
+        !user ||
+        !(await this.hasher.compareHash(sessionId, user.sessionId))
+      ) {
+        throw new RpcException({
+          status: HttpStatus.BAD_REQUEST,
+          message: 'Invalid session or this session has already expired',
+        });
+      }
+
+      return {
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          roles: user.roles,
+        },
+        token,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      throw new RpcException({
+        status: HttpStatus.UNAUTHORIZED,
+        message: 'Invalid access token',
+      });
+    }
+  }
+
+  // * Refresh session using refreshToken
+  async refreshSession(refreshToken: string) {
+    const { userId, sessionId } = this.jwtService.verify(refreshToken, {
+      secret: envs.jwtRefreshSecret,
+    });
+    // * Validate as current token available
+    const user = await this.user.findUnique({
+      where: { id: userId, isActive: true },
+    });
+
+    if (!user || !(await this.hasher.compareHash(sessionId, user.sessionId))) {
+      throw new RpcException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Invalid session or this session has already expired',
+      });
+    }
+
+    const token = await this.handleAccessCredentials({
+      userId,
+      sessionId: this.idGenerator.generateId(),
+    });
+
+    return { token };
   }
 
   // * Error Handler for service

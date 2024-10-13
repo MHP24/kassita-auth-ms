@@ -10,12 +10,21 @@ export class AuthController {
 
   @MessagePattern('auth.sign-up')
   signUp(@Payload() signUpUserDto: SignUpUserDto) {
-    console.log({ msPayload: signUpUserDto });
     return this.authService.createUser(signUpUserDto);
   }
 
   @MessagePattern('auth.sign-in')
   signIn(@Payload() signInUserDto: SignInUserDto) {
     return this.authService.loginUser(signInUserDto);
+  }
+
+  @MessagePattern('auth.verify.user')
+  verifySession(@Payload() token: string) {
+    return this.authService.verifySession(token);
+  }
+
+  @MessagePattern('auth.refresh-session')
+  refreshSession(@Payload() refreshToken: string) {
+    return this.authService.refreshSession(refreshToken);
   }
 }
