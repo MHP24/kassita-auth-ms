@@ -20,7 +20,6 @@ export class AuthController {
 
   @MessagePattern('auth.verify.user')
   verifySession(@Payload() token: string) {
-    console.log({ token });
     return this.authService.verifySession(token);
   }
 

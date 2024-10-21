@@ -50,8 +50,8 @@ model Ticket {
   ticketTypeRelation TicketType @relation(fields: [typeId], references: [id])
   user               User       @relation("created_tickets", fields: [userId], references: [id])
   userId             String     @map("user_id")
-  workerId           String?    @map("worker_id")
-  worker             User?      @relation("assigned_tickets", fields: [workerId], references: [id])
+  employeeId         String?    @map("employee_id")
+  employee           User?      @relation("assigned_tickets", fields: [employeeId], references: [id])
 
   @@index([status], name: "index_status")
   @@index([priority], name: "index_priority")
