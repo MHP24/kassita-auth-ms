@@ -3,12 +3,24 @@ import * as joi from 'joi';
 config();
 
 interface EnvVars {
-  PORT: number;
+  RABBITMQ_URL: string;
+  RABBITMQ_QUEUE: string;
+  JWT_SECRET: string;
+  JWT_REFRESH_SECRET: string;
+  JWT_EXPIRE_TEXT: string;
+  JWT_REFRESH_EXPIRE_TEXT: string;
+  JWT_EXPIRE_SECONDS: number;
 }
 
 const envSchema = joi
   .object({
-    PORT: joi.number().required(),
+    RABBITMQ_URL: joi.string().required(),
+    RABBITMQ_QUEUE: joi.string().required(),
+    JWT_SECRET: joi.string().required(),
+    JWT_REFRESH_SECRET: joi.string().required(),
+    JWT_EXPIRE_TEXT: joi.string().required(),
+    JWT_REFRESH_EXPIRE_TEXT: joi.string().required(),
+    JWT_EXPIRE_SECONDS: joi.number().required(),
   })
   .unknown(true);
 
@@ -20,5 +32,11 @@ if (error) {
 const envVars: EnvVars = value;
 
 export const envs = {
-  port: envVars.PORT,
+  rabbitMqUrl: envVars.RABBITMQ_URL,
+  rabbitMqQueue: envVars.RABBITMQ_QUEUE,
+  jwtSecret: envVars.JWT_SECRET,
+  jwtRefreshSecret: envVars.JWT_REFRESH_SECRET,
+  jwtExpireText: envVars.JWT_EXPIRE_TEXT,
+  jwtRefreshExpireText: envVars.JWT_REFRESH_EXPIRE_TEXT,
+  jwtExpireSeconds: envVars.JWT_EXPIRE_SECONDS,
 };
